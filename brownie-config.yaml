@@ -8,6 +8,17 @@ compiler:
       - '@chainlink=smartcontractkit/chainlink-brownie-contracts@0.3.1'
       - '@openzeppelin=OpenZeppelin/openzeppelin-contracts@4.4.2'
 
+dotenv: .env
+
+wallets:
+  dev_account_1: 
+    address: ${D1_ADDRESS}
+    private_key: ${D1_PRIVATE_KEY}
+
 networks:
+  default: development
+
   mainnet-fork-dev:
+    verify: False
+    local: 'fork'
     eth_usd_price_feed: '0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419'

@@ -76,7 +76,7 @@ contract Lottery is Ownable, VRFConsumerBase {
         require(_randomness > 0, "Cannot confirm validity of random value");
         uint256 winningIndex = _randomness % players.length;
         lastWinner = players[winningIndex];
-        payable(lastWinner).transfer(address(this).balance);
+        lastWinner.transfer(address(this).balance);
         //Reset
         players = new address payable[](0);
         lottery_state = LOTTERY_STATE.CLOSED;
