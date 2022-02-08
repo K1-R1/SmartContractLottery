@@ -52,7 +52,7 @@ contract Lottery is Ownable, VRFConsumerBase {
         players.push(payable(msg.sender));
     }
 
-    function startLottery() public {
+    function startLottery() public onlyOwner {
         require(
             lottery_state == LOTTERY_STATE.CLOSED,
             "Lottery is already open"
