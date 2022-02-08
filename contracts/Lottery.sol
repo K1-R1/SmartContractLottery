@@ -3,17 +3,25 @@
 pragma solidity ^0.8;
 
 import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 
 //All uint256 values will have 18 decimals
 
-contract Lottery {
+contract Lottery is Ownable {
     address payable[] public players;
     uint256 public USDEntryFee;
     AggregatorV3Interface internal ETHUSDPriceFeed;
+    enum LOTTERY_STATE {
+        OPEN,
+        CLOSED,
+        CALCULATING_WINNER
+    }
+    LOTTERY_STATE public lottery_state;
 
     constructor(address _priceFeedAddress) {
         USDEntryFee = 25 * (10**18);
         ETHUSDPriceFeed = AggregatorV3Interface(_priceFeedAddress);
+        lottery_state = LOTTERY_STATE.CLOSED;
     }
 
     function getEntranceFee() public returns (uint256) {
@@ -25,12 +33,19 @@ contract Lottery {
         return entryFee;
     }
 
-    function enter() public {
-        //entry fee
-        //store player
+    function enter() public payable {
+        require(lottery_state == LOTTERY_STATE.OPEN, "Lottery is closed");
+        require(msg.value >= getEntranceFee(), "Entry fee is $25");
+        players.push(payable(msg.sender));
     }
 
-    function startLottery() public {}
+    function startLottery() public {
+        require(
+            lottery_state == LOTTERY_STATE.CLOSED,
+            "Lottery is already open"
+        );
+        lottery_state = LOTTERY_STATE.OPEN;
+    }
 
     function endLottery() public {}
 }
