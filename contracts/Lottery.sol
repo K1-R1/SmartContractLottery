@@ -20,7 +20,7 @@ contract Lottery is Ownable, VRFConsumerBase {
     LOTTERY_STATE public lottery_state;
     uint256 public vrfFee;
     bytes32 public vrfKeyHash;
-    address public lastWinner;
+    address payable public lastWinner;
     uint256 public latestRandomNumber;
 
     constructor(
