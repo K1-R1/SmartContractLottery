@@ -60,5 +60,26 @@ contract Lottery is Ownable, VRFConsumerBase {
         lottery_state = LOTTERY_STATE.OPEN;
     }
 
-    function endLottery() public {}
+    function endLottery() public onlyOwner {
+        lottery_state = LOTTERY_STATE.CALCULATING_WINNER;
+        bytes32 requestId = requestRandomness(vrfKeyHash, vrfFee);
+    }
+
+    function fulfillRandomness(bytes32 _requestId, uint256 _randomness)
+        internal
+        override
+    {
+        require(
+            lottery_state == LOTTERY_STATE.CALCULATING_WINNER,
+            "Lottery not in correct state"
+        );
+        require(_randomness > 0, "Cannot confirm validity of random value");
+        uint256 winningIndex = _randomness % players.length;
+        lastWinner = players[winningIndex];
+        payable(lastWinner).transfer(address(this).balance);
+
+        players = new address payable[](0);
+        lottery_state = LOTTERY_STATE.CLOSED;
+        latestRandomNumber = _randomness;
+    }
 }
