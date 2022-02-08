@@ -7,7 +7,7 @@ from brownie import Lottery, network, config
 
 def deploy_lottery():
     account = get_account()
-    Lottery.deploy(
+    lottery = Lottery.deploy(
         get_contract('eth_usd_price_feed').address,
         get_contract('vrf_coordinator').address,
         get_contract('link_token').address,
@@ -16,7 +16,8 @@ def deploy_lottery():
         {'from': account},
         publish_source = config['networks'][network.show_active()]['verify']
         )
-
+    return lottery
+    
 def main():
     deploy_lottery()
     start_lottery()
