@@ -4,10 +4,11 @@ pragma solidity ^0.8;
 
 import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "@chainlink/contracts/src/v0.8/VRFConsumerBase.sol";
 
 //All uint256 values will have 18 decimals
 
-contract Lottery is Ownable {
+contract Lottery is Ownable, VRFConsumerBase {
     address payable[] public players;
     uint256 public USDEntryFee;
     AggregatorV3Interface internal ETHUSDPriceFeed;
@@ -17,11 +18,23 @@ contract Lottery is Ownable {
         CALCULATING_WINNER
     }
     LOTTERY_STATE public lottery_state;
+    uint256 public vrfFee;
+    bytes32 public vrfKeyHash;
+    address public lastWinner;
+    uint256 public latestRandomNumber;
 
-    constructor(address _priceFeedAddress) {
+    constructor(
+        address _priceFeedAddress,
+        address _vrfCoordinator,
+        address _link,
+        uint256 _fee,
+        bytes32 _keyHash
+    ) VRFConsumerBase(_vrfCoordinator, _link) {
         USDEntryFee = 25 * (10**18);
         ETHUSDPriceFeed = AggregatorV3Interface(_priceFeedAddress);
         lottery_state = LOTTERY_STATE.CLOSED;
+        vrfFee = _fee;
+        vrfKeyHash = _keyHash;
     }
 
     function getEntranceFee() public returns (uint256) {
