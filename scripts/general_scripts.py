@@ -1,4 +1,4 @@
-from brownie import network, accounts, config, Contract, MockV3Aggregator, LinkToken, VRFCoordinatorMock
+from brownie import network, accounts, config, Contract, interface, MockV3Aggregator, LinkToken, VRFCoordinatorMock
 
 
 def get_account(index=None, id=None):
@@ -41,6 +41,7 @@ def deploy_mocks(contract_type, decimals=DECIMALS, starting_value=STARTING_VALUE
         if len(contract_type) == 0:
             if len(LinkToken) == 0:
                 LinkToken.deploy({'from': get_account()})
+                print('LinkToken (mock) deployed')
             VRFCoordinatorMock.deploy(LinkToken[-1].address, {'from': get_account()})
             print('VRFCoordinatorMock deployed')
 
@@ -48,4 +49,14 @@ def deploy_mocks(contract_type, decimals=DECIMALS, starting_value=STARTING_VALUE
         if len(contract_type) == 0:
             LinkToken.deploy({'from': get_account()})
             print('LinkToken (mock) deployed')
+
+def fund_with_link(recipient_address, account=None, link_token=None, ammount=1*(10**17)):
+    account = account if account else get_account()
+    link_token = link_token if link_token else get_contract('link_token')
+
+    link_token_contract = interface.LinkTokenInterface(link_token.address)
+    tx = link_token_contract.transfer(recipient_address, ammount, {'from': account}).wait(1)
+    print('Contract funded with 0.1 LINK...\n')
+    return tx
+
     
