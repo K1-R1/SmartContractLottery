@@ -1,7 +1,5 @@
-from brownie import exceptions
 from scripts.deploy_lottery import deploy_lottery
-from scripts.general_scripts import get_account, get_contract, fund_with_link
-from web3 import Web3
+from scripts.general_scripts import get_account, fund_with_link
 from brownie import network, config
 import pytest
 
@@ -12,8 +10,8 @@ def test_can_pick_winner():
     lottery = deploy_lottery()
     account = get_account()
     lottery.startLottery({'from': account}).wait(1)
-    lottery.enter({'from': account, 'value': lottery.getEntranceFee().return_value}).wait(1)
-    lottery.enter({'from': account, 'value': lottery.getEntranceFee().return_value}).wait(1)
+    lottery.enter({'from': account, 'value': lottery.getEntranceFee().value}).wait(1)
+    lottery.enter({'from': account, 'value': lottery.getEntranceFee().value}).wait(1)
     #Act
     account_balance = account.balance()
     lottery_balance = lottery.balance()

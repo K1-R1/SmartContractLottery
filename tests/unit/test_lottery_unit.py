@@ -11,7 +11,7 @@ def test_get_entrance_fee():
         pytest.skip()
     lottery = deploy_lottery()
     #Act
-    entrance_fee = lottery.getEntranceFee().return_value
+    entrance_fee = lottery.getEntranceFee().value
     # Mock price feed ETHUSD value: 2000
     # USDEntryFee = 25
     # 25 / 2000 = 0.0125 ETH
@@ -26,7 +26,7 @@ def test_cant_enter_unless_started():
     lottery = deploy_lottery()
     #Act / Assert
     with pytest.raises(exceptions.VirtualMachineError):
-        lottery.enter({'from': get_account(), 'value': lottery.getEntranceFee().return_value})
+        lottery.enter({'from': get_account(), 'value': lottery.getEntranceFee().value})
 
 def test_can_start_and_enter_lottery():
     #Arrange
@@ -36,7 +36,7 @@ def test_can_start_and_enter_lottery():
     account = get_account()
     #Act
     lottery.startLottery({'from': account}).wait(1)
-    lottery.enter({'from': account, 'value': lottery.getEntranceFee().return_value}).wait(1)
+    lottery.enter({'from': account, 'value': lottery.getEntranceFee().value}).wait(1)
     #Assert
     assert lottery.lottery_state() == 0
     assert lottery.players(0) == account
@@ -48,7 +48,7 @@ def test_can_end_lottery():
     lottery = deploy_lottery()
     account = get_account()
     lottery.startLottery({'from': account}).wait(1)
-    lottery.enter({'from': account, 'value': lottery.getEntranceFee().return_value}).wait(1)
+    lottery.enter({'from': account, 'value': lottery.getEntranceFee().value}).wait(1)
     #Act
     fund_with_link(lottery.address)
     lottery.endLottery({'from': account}).wait(1)
@@ -62,9 +62,9 @@ def test_can_pick_winner():
     lottery = deploy_lottery()
     account = get_account()
     lottery.startLottery({'from': account}).wait(1)
-    lottery.enter({'from': account, 'value': lottery.getEntranceFee().return_value}).wait(1)
-    lottery.enter({'from': get_account(index=1), 'value': lottery.getEntranceFee().return_value}).wait(1)
-    lottery.enter({'from': get_account(index=2), 'value': lottery.getEntranceFee().return_value}).wait(1)
+    lottery.enter({'from': account, 'value': lottery.getEntranceFee().value}).wait(1)
+    lottery.enter({'from': get_account(index=1), 'value': lottery.getEntranceFee().value}).wait(1)
+    lottery.enter({'from': get_account(index=2), 'value': lottery.getEntranceFee().value}).wait(1)
     #Act
     fund_with_link(lottery.address)
     end_tx = lottery.endLottery({'from': account})

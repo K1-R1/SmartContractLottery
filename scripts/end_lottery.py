@@ -10,7 +10,8 @@ def end_lottery():
     lottery = Lottery[-1]
     fund_with_link(lottery.address)
     lottery.endLottery({'from': account}).wait(1)
-    time.sleep(10)
+    print('Awaiting respone from VRFCoordinator...')
+    time.sleep(180)
     print(f"{lottery.lastWinner()} is the new winner ...")
 
 def main():
