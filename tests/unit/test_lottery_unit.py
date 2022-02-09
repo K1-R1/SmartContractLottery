@@ -74,6 +74,7 @@ def test_can_pick_winner():
     request_id = end_tx.events['RequestRandomness']['requestId']
     static_RNG = 3
     get_contract('vrf_coordinator').callBackWithRandomness(request_id, static_RNG, lottery.address, {'from': account}).wait(1)
+    #Assert
     # uint256 winningIndex = _randomness % players.length;
     # 3 % 3 = 0
     assert lottery.lastWinner() == account
