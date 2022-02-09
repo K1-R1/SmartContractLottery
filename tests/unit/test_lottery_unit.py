@@ -1,6 +1,6 @@
 from brownie import exceptions
 from scripts.deploy_lottery import deploy_lottery
-from scripts.general_scripts import get_account
+from scripts.general_scripts import get_account, fund_with_link
 from web3 import Web3
 from brownie import network, config
 import pytest
@@ -40,4 +40,18 @@ def test_can_start_and_enter_lottery():
     #Assert
     assert lottery.lottery_state() == 0
     assert lottery.players(0) == account
+
+def test_can_end_lottery():
+    #Arrange
+    if not config['networks'][network.show_active()]['local'] is True:
+        pytest.skip()
+    lottery = deploy_lottery()
+    account = get_account()
+    lottery.startLottery({'from': account}).wait(1)
+    lottery.enter({'from': account, 'value': lottery.getEntranceFee().return_value}).wait(1)
+    #Act
+    fund_with_link(lottery.address)
+    lottery.endLottery({'from': account}).wait(1)
+    #Assert
+    assert lottery.lottery_state() == 2
 
