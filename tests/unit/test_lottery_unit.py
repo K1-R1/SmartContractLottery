@@ -27,3 +27,17 @@ def test_cant_enter_unless_started():
     #Act / Assert
     with pytest.raises(exceptions.VirtualMachineError):
         lottery.enter({'from': get_account(), 'value': lottery.getEntranceFee().return_value})
+
+def test_can_start_and_enter_lottery():
+    #Arrange
+    if not config['networks'][network.show_active()]['local'] is True:
+        pytest.skip()
+    lottery = deploy_lottery()
+    account = get_account()
+    #Act
+    lottery.startLottery({'from': account}).wait(1)
+    lottery.enter({'from': account, 'value': lottery.getEntranceFee().return_value}).wait(1)
+    #Assert
+    assert lottery.lottery_state() == 0
+    assert lottery.players(0) == account
+
